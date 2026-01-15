@@ -1,4 +1,5 @@
 import sys
+import os
 import time
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget,
@@ -19,6 +20,14 @@ SUPPORTED_DEVICES = {
 
 SUPPORTED_VERSIONS = {'9.3.5', '9.3.6'}
 
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 class WorkerThread(QThread):
     finished = pyqtSignal(str)
     error = pyqtSignal(str)
@@ -37,7 +46,7 @@ class WorkerThread(QThread):
     def run(self):
         try:
             lockdown = create_using_usbmux()
-
+            
             activation_state = lockdown.get_value(key='ActivationState')
             if activation_state == 'Activated':
                 self.finished.emit("Device is already activated")
@@ -54,10 +63,13 @@ class WorkerThread(QThread):
                 return
 
             self.status_update.emit("Activating device...")
+            
+            payload_path = resource_path('payload')
+
             with AfcService(lockdown=lockdown) as afc:
                 afc.set_file_contents(
                     'Downloads/downloads.28.sqlitedb',
-                    open('payload', 'rb').read()
+                    open(payload_path, 'rb').read()
                 )
             
             DiagnosticsService(lockdown=lockdown).restart()
@@ -77,7 +89,7 @@ class WorkerThread(QThread):
                     with AfcService(lockdown=lockdown) as afc:
                         afc.set_file_contents(
                             'Downloads/downloads.28.sqlitedb',
-                            open('payload', 'rb').read()
+                            open(payload_path, 'rb').read()
                         )
                     
                     diag.restart()
@@ -95,7 +107,7 @@ class WorkerThread(QThread):
                 if should_hactivate is False:
                     self.error.emit("Activation failed after multiple attempts. Make sure the device is connected to the Wi-Fi.")
                     return
-
+                
             DiagnosticsService(lockdown=lockdown).restart()
             self.finished.emit("Done!")
             
@@ -106,7 +118,7 @@ class WorkerThread(QThread):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("A5 Bypass OSS")
+        self.setWindowTitle("A5 Bypass OSS v1.0.0")
         self.setFixedSize(300, 200)
 
         layout = QVBoxLayout()
