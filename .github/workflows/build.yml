@@ -1,0 +1,49 @@
+name: Build A5 Bypass OSS
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build ${{ matrix.file_name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            file_name: "a5_bypass_oss_windows"
+          
+          - os: ubuntu-latest
+            file_name: "a5_bypass_oss_linux"
+          
+          - os: macos-latest
+            file_name: "a5_bypass_oss_macos_arm64"
+            
+          - os: macos-15-intel
+            file_name: "a5_bypass_oss_macos_intel"
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Dependencies
+      run: |
+        pip install PyQt6 pymobiledevice3 pyinstaller
+
+    - name: Build with PyInstaller
+      run: |
+        pyinstaller --noconfirm --onefile --windowed --name "${{ matrix.file_name }}" --add-data "payload${{ runner.os == 'Windows' && ';' || ':' }}." --hidden-import "pymobiledevice3" main.py
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.file_name }}
+        path: dist/*
