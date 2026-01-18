@@ -18,7 +18,7 @@ SUPPORTED_DEVICES = {
     'iPod5,1'
 }
 
-SUPPORTED_VERSIONS = {'9.3.5', '9.3.6'}
+SUPPORTED_VERSIONS = {'8.4.1', '9.3.5', '9.3.6'}
 
 def resource_path(relative_path):
     try:
@@ -118,7 +118,7 @@ class WorkerThread(QThread):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("A5 Bypass OSS v1.0.0")
+        self.setWindowTitle("A5 Bypass OSS v1.0.1")
         self.setFixedSize(300, 200)
 
         layout = QVBoxLayout()
