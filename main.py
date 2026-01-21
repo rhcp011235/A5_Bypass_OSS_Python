@@ -92,6 +92,8 @@ class WorkerThread(QThread):
                             open(payload_path, 'rb').read()
                         )
                     
+                    time.sleep(5)
+
                     diag.restart()
                     time.sleep(10) 
                     
