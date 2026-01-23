@@ -74,7 +74,7 @@
 			<key>GraphicsFeatureSetClass</key>
 			<string>GLES2,0</string>
 			<key>ArtworkDeviceProductDescription</key>
-			<string>iPad 2</string>
+			<string>iPad</string>
 			<key>GraphicsFeatureSetFallbacks</key>
 			<string>0</string>
 			<key>CompatibleDeviceFallback</key>
