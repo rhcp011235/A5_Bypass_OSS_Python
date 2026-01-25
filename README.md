@@ -13,6 +13,14 @@ The authors and contributors take no responsibility for misuse or for any damage
 - The target device must be connected to Wi-Fi at all times during operation.  
   Network connectivity is mandatory for the application workflow to function correctly.
 
+## Compatibility
+
+The tool is compatible with all A5 devices running **iOS 9.3.6** and **iOS 9.3.5**
+
+Support for **iOS 8.4.1** was introduced in [v1.0.1](https://github.com/overcast302/A5_Bypass_OSS/releases/tag/v1.0.1). However, it is currently broken on cellular devices (see #7). Wi-Fi models are fully supported.
+
+No support for other iOS versions is planned yet.
+
 ## Backend Configuration
 
 The backend URL is stored inside the payload SQLite database.
@@ -20,18 +28,14 @@ The backend URL is stored inside the payload SQLite database.
 To modify it:
 - Open the payload SQLite database.
 - Locate the table named `asset`.
-- Edit the field containing the backend URL accordingly.
-- Save the database before redeploying or running the application.
+- Edit the `url` field containing the backend URL.
+- Write database changes before running the application.
 
-No other configuration files are used for backend URL resolution.
-
-## Developers
-
-Brought to you by:
-- overcast302
-- pkkf5673
+The PC client is fully offline.
 
 ## Credits
+- [pkkf5673](https://github.com/bablaerrr)
+- [bl_sbx](https://github.com/hanakim3945/bl_sbx)
 - [pymobiledevice3](https://github.com/doronz88/pymobiledevice3)
 
 ## License
