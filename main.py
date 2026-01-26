@@ -4,7 +4,7 @@ import time
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton, QLabel, QMessageBox
 from PyQt6.QtCore import QThread, pyqtSignal, QTimer
-from pymobiledevice3.lockdown import create_using_usbmux
+from pymobiledevice3.lockdown import create_using_usbmux, NoDeviceConnectedError
 from pymobiledevice3.services.afc import AfcService
 from pymobiledevice3.services.diagnostics import DiagnosticsService
 
@@ -39,11 +39,11 @@ class ActivationThread(QThread):
                 lockdown = create_using_usbmux()
                 if lockdown.get_value(key='ProductType'):
                     return lockdown
-            except RuntimeError:
+            except NoDeviceConnectedError:
                 pass
             time.sleep(1)
 
-        raise TimeoutError('Device did not reconnect in time')
+        raise TimeoutError()
 
     def push_payload(self, lockdown, payload_path, delay=10):
         with AfcService(lockdown=lockdown) as afc:
@@ -80,7 +80,7 @@ class ActivationThread(QThread):
 
             if should_hactivate is False:
                 for i in range(5):
-                    self.status_update.emit(f'Retrying activation\n Attempt {i+1}/5')
+                    self.status_update.emit(f'Retrying activation\nAttempt {i+1}/5')
                     lockdown = self.push_payload(lockdown, payload_path, 10+i*5)
                     should_hactivate = self.get_should_hactivate(lockdown)
                     if should_hactivate is not False:
