@@ -18,11 +18,9 @@ SUPPORTED_DEVICES = {
 
 SUPPORTED_VERSIONS = {'8.4.1', '9.3.5', '9.3.6'}
 
+# pyinstaller resource path handling fix
 def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath('.')
+    base_path = getattr(sys, '_MEIPASS', os.path.abspath('.'))
     return os.path.join(base_path, relative_path)
 
 class ActivationThread(QThread):
