@@ -20,7 +20,7 @@ jobs:
             file_name: "a5_bypass_oss_linux"
           - os: macos-latest
             file_name: "a5_bypass_oss_macos_arm64"
-          - os: macos-13
+          - os: macos-15-intel
             file_name: "a5_bypass_oss_macos_intel"
 
     steps:
@@ -32,9 +32,11 @@ jobs:
         python-version: '3.11'
 
     - name: Install Dependencies
-      run: |
-        pip install PyQt6 pymobiledevice3 pyinstaller
-        if [ "$RUNNER_OS" == "macOS" ]; then brew install create-dmg; fi
+      run: pip install PyQt6 pymobiledevice3 pyinstaller
+
+    - name: Install DMG Creator
+      if: runner.os == 'macOS'
+      run: brew install create-dmg
 
     - name: Build with PyInstaller
       env:
@@ -47,6 +49,7 @@ jobs:
       run: |
         cd dist
         plutil -replace LSMinimumSystemVersion -string "12.0" "${{ matrix.file_name }}.app/Contents/Info.plist"
+        codesign --force --deep --sign - "${{ matrix.file_name }}.app"
         create-dmg --volname "Installer" --window-pos 200 120 --window-size 600 300 --icon-size 100 --text-size 12 --hide-extension "${{ matrix.file_name }}.app" --app-drop-link 450 140 --icon "${{ matrix.file_name }}.app" 150 140 "${{ matrix.file_name }}.dmg" "${{ matrix.file_name }}.app"
 
     - name: Upload Artifacts
