@@ -32,7 +32,10 @@ jobs:
         python-version: '3.11'
 
     - name: Install Dependencies
-      run: pip install PyQt6 pymobiledevice3 pyinstaller
+      run: |
+        pip install pymobiledevice3 pyinstaller netifaces
+        # Try PyQt6 first, fallback to PyQt5 for compatibility
+        pip install PyQt6 || pip install PyQt5
 
     - name: Install DMG Creator
       if: runner.os == 'macOS'
@@ -42,7 +45,14 @@ jobs:
       env:
         MACOSX_DEPLOYMENT_TARGET: "12.0"
       run: |
-        pyinstaller --noconfirm --onefile --windowed --name "${{ matrix.file_name }}" --add-data "payload${{ runner.os == 'Windows' && ';' || ':' }}." --hidden-import "pymobiledevice3" main.py
+        pyinstaller --noconfirm --onefile --windowed --name "${{ matrix.file_name }}" \
+          --add-data "payload${{ runner.os == 'Windows' && ';' || ':' }}." \
+          --add-data "backend${{ runner.os == 'Windows' && ';' || ':' }}backend" \
+          --hidden-import "pymobiledevice3" \
+          --hidden-import "netifaces" \
+          --collect-all "PyQt6" \
+          --collect-all "PyQt5" \
+          main.py
 
     - name: Package macOS DMG
       if: runner.os == 'macOS'
